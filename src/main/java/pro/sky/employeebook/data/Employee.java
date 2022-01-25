@@ -1,4 +1,4 @@
-package pro.sky.employeebook;
+package pro.sky.employeebook.data;
 
 public class Employee {
     private String firstName;

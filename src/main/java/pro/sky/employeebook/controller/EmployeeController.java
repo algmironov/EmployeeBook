@@ -1,9 +1,13 @@
-package pro.sky.employeebook;
+package pro.sky.employeebook.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pro.sky.employeebook.data.Employee;
+import pro.sky.employeebook.service.EmployeeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
@@ -20,23 +24,30 @@ public class EmployeeController {
 
     @GetMapping(path = "/add")
     public Employee addEmployee(@RequestParam("firstName") String firstName,
-                              @RequestParam("lastName") String lastName) {
-        Employee newEmployee = employeeService.addEmployee(firstName, lastName);
-        return newEmployee;
+                                @RequestParam("lastName") String lastName) {
+        return employeeService.addEmployee(firstName, lastName);
 
     }
 
     @GetMapping(path = "/find")
     public Employee findEmployee(@RequestParam("firstName") String firstName,
                         @RequestParam("lastName") String lastName) {
-        Employee foundedEmployee = employeeService.findEmployee(firstName, lastName);
-        return foundedEmployee;
+        return employeeService.findEmployee(firstName, lastName);
     }
 
     @GetMapping(path = "/remove")
     public Employee removeEmployee(@RequestParam("firstName") String firstName,
                                  @RequestParam("lastName") String lastName) {
-        Employee removedEmployee = employeeService.removeEmployee(firstName, lastName);
-        return removedEmployee;
+        return employeeService.removeEmployee(firstName, lastName);
+    }
+
+    @GetMapping("/printAll")
+    public List<Employee> printAllEmployees(){
+        return employeeService.printAllEmployees();
+    }
+
+    @GetMapping("/getSize")
+    public Integer getSize() {
+        return employeeService.getSize();
     }
 }
