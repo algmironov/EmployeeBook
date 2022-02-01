@@ -2,7 +2,7 @@ package pro.sky.employeebook.service;
 
 import pro.sky.employeebook.data.Employee;
 
-import java.util.Set;
+import java.util.Collection;
 
 public interface EmployeeService {
     Employee findEmployee(String firstName, String lastName);
@@ -11,7 +11,7 @@ public interface EmployeeService {
 
     Employee removeEmployee(String firstName, String lastName);
 
-    Set<Employee> printAllEmployees();
+    Collection<Employee> printAllEmployees();
 
     Integer getSize();
 
