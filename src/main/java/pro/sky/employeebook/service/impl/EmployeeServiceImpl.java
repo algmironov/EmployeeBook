@@ -7,54 +7,73 @@ import pro.sky.employeebook.exceptions.EmployeeIsMissingException;
 import pro.sky.employeebook.exceptions.NoEmployeesInListException;
 import pro.sky.employeebook.service.EmployeeService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     private int size;
-    private List<Employee> employeeList = new ArrayList<>();
+    private final Map<Integer, Employee> employeeBook = new HashMap<>();
+
+    private int getNewId() {
+        int newId = 0;
+        newId += employeeBook.size();
+        return newId;
+    }
 
     @Override
     public Employee addEmployee(String firstName, String lastName) {
         Employee newEmployee = new Employee(firstName, lastName);
-        for (Employee employee : employeeList) {
-            if (newEmployee.equals(employee)) {
+            if (employeeBook.containsValue(newEmployee)) {
                 throw new EmployeeAlreadyExistException("This employee already exists");
+            } else {
+                employeeBook.put(getNewId(), newEmployee);
+                size++;
+                return newEmployee;
             }
-        }
-        employeeList.add(newEmployee);
-        size++;
-        return newEmployee;
-
     }
 
     @Override
     public Employee findEmployee(String firstName, String lastName) {
         Employee foundEmployee = new Employee(firstName, lastName);
-        if (!employeeList.contains(foundEmployee)) {
+        if (!employeeBook.containsValue(foundEmployee)) {
             throw new EmployeeIsMissingException("This employee is missing");
         }
         return foundEmployee;
     }
 
-    public Employee removeEmployee(String firstName, String lastName) {
-        Employee employeeToRemove = new Employee(firstName, lastName);
-        if (!employeeList.contains(employeeToRemove)) {
+    private int getEmployeeId(String firstName, String lastName) {
+        Employee employee = new Employee(firstName, lastName);
+        if (!employeeBook.containsValue(employee)) {
             throw new EmployeeIsMissingException("Cannot delete missing employee");
         }
-        employeeList.remove(employeeToRemove);
-        size--;
+        int id = 0;
+        int employeeId = 0;
+        for (; id < employeeBook.size() - 1; id++) {
+            if (employeeBook.get(id).equals(employee)) {
+                employeeId += id;
+            }
+        }
 
+        return employeeId;
+    }
+
+    public Employee removeEmployee(String firstName, String lastName) {
+        Employee employeeToRemove = new Employee(firstName, lastName);
+        if (!employeeBook.containsValue(employeeToRemove)) {
+            throw new EmployeeIsMissingException("Cannot delete missing employee");
+        }
+        employeeBook.remove(getEmployeeId(firstName, lastName),employeeToRemove);
+        size--;
         return employeeToRemove;
     }
 
     @Override
-    public List<Employee> printAllEmployees() {
+    public Map<Integer, Employee> printAllEmployees() {
         if (size == 0) {
             throw new NoEmployeesInListException("Employee list is empty");
         }
-        return employeeList;
+        return employeeBook;
     }
 
     @Override
