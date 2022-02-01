@@ -9,25 +9,27 @@ import pro.sky.employeebook.service.EmployeeService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
-    private int size;
-    private final Map<Integer, Employee> employeeBook = new HashMap<>();
+    private static int size;
+    private final transient Map<Employee, Object> employeeBook;
+    public EmployeeServiceImpl() {employeeBook = new HashMap<>();}
+    private static final Object PRESENT = new Object();
 
-    private int getNewId() {
-        int newId = 0;
-        newId += employeeBook.size();
+    /*private int getNewId() {
+        int newId = size;
         return newId;
     }
-
+*/
     @Override
     public Employee addEmployee(String firstName, String lastName) {
         Employee newEmployee = new Employee(firstName, lastName);
-            if (employeeBook.containsValue(newEmployee)) {
+            if (employeeBook.containsKey(newEmployee)) {
                 throw new EmployeeAlreadyExistException("This employee already exists");
             } else {
-                employeeBook.put(getNewId(), newEmployee);
+                employeeBook.put(newEmployee, PRESENT);
                 size++;
                 return newEmployee;
             }
@@ -35,45 +37,47 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findEmployee(String firstName, String lastName) {
-        Employee foundEmployee = new Employee(firstName, lastName);
-        if (!employeeBook.containsValue(foundEmployee)) {
-            throw new EmployeeIsMissingException("This employee is missing");
-        }
-        return foundEmployee;
-    }
-
-    private int getEmployeeId(String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
-        if (!employeeBook.containsValue(employee)) {
-            throw new EmployeeIsMissingException("Cannot delete missing employee");
+        if (employeeBook.containsKey(employee)) {
+            return employee;
+        } else {
+            throw new EmployeeIsMissingException("This employee is empty");
         }
-        int id = 0;
-        int employeeId = 0;
-        for (; id < employeeBook.size() - 1; id++) {
-            if (employeeBook.get(id).equals(employee)) {
-                employeeId += id;
-            }
-        }
-
-        return employeeId;
     }
+
+//    private int getEmployeeId(String firstName, String lastName) {
+//        Employee employee = new Employee(firstName, lastName);
+//        if (!employeeBook.containsValue(employee)) {
+//            throw new EmployeeIsMissingException("This employee is missing");
+//        }
+//        int id = 0;
+//        int employeeId = 0;
+//        for (; id < employeeBook.size() - 1; id++) {
+//            if (employeeBook.get(id) == null) {
+//                continue;
+//            } else  if (employeeBook.get(id).equals(employee)) {
+//                employeeId += id;
+//            }
+//        }
+//        return employeeId;
+//    }
 
     public Employee removeEmployee(String firstName, String lastName) {
         Employee employeeToRemove = new Employee(firstName, lastName);
-        if (!employeeBook.containsValue(employeeToRemove)) {
+        if (!employeeBook.containsKey(employeeToRemove)) {
             throw new EmployeeIsMissingException("Cannot delete missing employee");
         }
-        employeeBook.remove(getEmployeeId(firstName, lastName),employeeToRemove);
+        employeeBook.remove(employeeToRemove, PRESENT);
         size--;
         return employeeToRemove;
     }
 
     @Override
-    public Map<Integer, Employee> printAllEmployees() {
+    public Set<Employee> printAllEmployees() {
         if (size == 0) {
             throw new NoEmployeesInListException("Employee list is empty");
         }
-        return employeeBook;
+        return employeeBook.keySet();
     }
 
     @Override

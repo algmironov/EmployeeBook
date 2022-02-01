@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pro.sky.employeebook.data.Employee;
 import pro.sky.employeebook.service.EmployeeService;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/employee")
@@ -43,7 +42,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/printAll")
-    public Map<Integer, Employee> printAllEmployees(){
+    public Set<Employee> printAllEmployees(){
         return employeeService.printAllEmployees();
     }
 
